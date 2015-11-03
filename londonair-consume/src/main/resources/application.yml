@@ -1,0 +1,29 @@
+management:
+  port: ${MGMT_PORT:8180}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+londonair:
+  riak:
+    hosts: localhost:10017
+  ingest:
+    batch:
+      size: 256
+      timeout: 15
+    bucket:
+      raw: ${RAW_BUCKET:AirQualityDataRaw}
+      enriched: ${ENRICHED_BUCKET:AirQualityDataEnriched}
+
+# Spring Cloud Stream settings
+spring:
+  cloud:
+    stream:
+      bindings:
+        input: ${CONSUME_TOPIC:londonair.ingest.enriched} # or: londonair.ingest.raw
+        input.contentType: application/octet-stream
+      binder:
+        kafka:
+          mode: raw
+          zkNodes: ${ZOOKEEPER_NODES:localhost}
+          brokers: ${KAFKA_BROKERS:localhost}
